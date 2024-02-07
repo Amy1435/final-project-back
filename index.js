@@ -4,6 +4,8 @@ import morgan from "morgan";
 import cors from "cors";
 import usersRoute from "./routes/usersRoute.js";
 import postsRoute from "./routes/postsRoute.js";
+import cititesRoute from "./routes/citiesRoute.js";
+import authRoute from "./routes/authRoute.js";
 import dotenv from "dotenv";
 dotenv.config();
 const { MONGODB_URI } = process.env;
@@ -19,6 +21,8 @@ app.use(morgan("dev"));
 
 app.use("/users", usersRoute);
 app.use("/posts", postsRoute);
+app.use("/cities", cititesRoute);
+app.use("/auth", authRoute);
 //SERVER
 mongoose
     .connect(MONGODB_URI)

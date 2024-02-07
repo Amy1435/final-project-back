@@ -27,22 +27,26 @@ const PostSchema = new Schema(
             //only if the user exist
             type: String,
             required: [true, `You must insert a user Author`],
-            validate: {
-                validator: async function (value) {
-                    const user = await model("User").findOne({
-                        username: value,
-                    });
-                    return user !== null;
-                },
-                message: "User does not exist",
-            },
+            // validate: {
+            //     validator: async function (value) {
+            //         const user = await model("User").findOne({
+            //             username: value,
+            //         });
+            //         return user !== null;
+            //     },
+            //     message: "User does not exist",
+            // },
         },
     },
     {
         timestamps: true,
     }
 );
-
+PostSchema.pre("save", function (next) {
+    this.city = this.city.toLowerCase();
+    this.username = this.username.toLowerCase();
+    next();
+});
 const Post = model("Post", PostSchema);
 
 export default Post;

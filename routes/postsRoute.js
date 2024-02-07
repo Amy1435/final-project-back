@@ -17,8 +17,18 @@ router.post("/", async (req, res) => {
 //GET all post
 router.get("/", async (req, res) => {
     try {
-        const posts = await Post.find({});
-        res.status(200).json(posts);
+        const { username, city } = req.query;
+
+        if (username) {
+            const userPosts = await Post.find({ username });
+            res.status(200).json(userPosts);
+        } else if (city) {
+            const userPosts = await Post.find({ city });
+            res.status(200).json(userPosts);
+        } else {
+            const posts = await Post.find({});
+            res.status(200).json(posts);
+        }
     } catch (error) {
         console.error(error.stack);
         res.status(500).json({ message: error.message });
@@ -41,14 +51,23 @@ router.get("/:id", async (req, res) => {
 router.patch("/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        const post = await Post.findByIdAndUpdate(id, req.body);
+        const post = await Post.findById(id);
         if (!post) {
             return res
                 .status(404)
                 .json({ message: `cant find Post with ID ${id}` });
         }
-        const updatedPost = await Post.findById(id);
-        res.status(200).json(updatedPost);
+        if (post.username === req.body.username) {
+            try {
+                const updatedPost = await Post.findByIdAndUpdate(id, req.body);
+                const newPost = await Post.findById(id);
+                res.status(200).json(newPost);
+            } catch (error) {
+                res.status(500).json({ message: error.message });
+            }
+        } else {
+            res.status(401).json(`you can modify only your posts`);
+        }
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -58,10 +77,19 @@ router.patch("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        await Post.findByIdAndDelete(id);
-        res.status(200).json({
-            message: `The Post ID${id} was erased from database`,
-        });
+        const post = await Post.findById(id);
+        if (post.username === req.body.username) {
+            try {
+                await Post.findByIdAndDelete(id);
+                res.status(200).json({
+                    message: `The Post ID${id} was erased from database`,
+                });
+            } catch (error) {
+                res.status(500).json({ message: error.message });
+            }
+        } else {
+            res.status(401).json(`you can modify only your posts`);
+        }
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
