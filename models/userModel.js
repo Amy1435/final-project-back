@@ -10,6 +10,7 @@ const validPassword = {
     minNumbers: 1,
     minSymbols: 1,
 };
+
 const UserSchema = new Schema(
     {
         username: {
@@ -56,41 +57,42 @@ const UserSchema = new Schema(
 );
 UserSchema.statics.signUpControl = async function (email, password, username) {
     if (!isEmail(email)) {
-        const error = new Error(`Please use a real Email`);
+        const error = new Error(`Please use a valid email for authentication.`);
         error.status = 400;
         throw error;
     }
 
     if (!isStrongPassword(password)) {
-        const error = new Error(`Password not strong`);
+        const error = new Error(`Your password is not strong enough.`);
         error.status = 400;
         throw error;
     }
 
     const usedEmail = await this.exists({ email });
     const usedUsername = await this.exists({ username });
+
     if (usedEmail) {
-        const error = new Error(`Email already in use`);
+        const error = new Error(`Please use a valid email for authentication.`);
         error.status = 400;
         throw error;
     }
     if (usedUsername) {
-        const error = new Error(`UserName already in use`);
+        const error = new Error(`Your password is not strong enough.`);
         error.status = 400;
         throw error;
     }
 };
 
-UserSchema.statics.logInControl = async function (email, password) {
+UserSchema.statics.logInControl = async function (email) {
     const user = await this.findOne({ email: email });
     if (!user) {
-        const error = new Error("wrong email or password");
+        const error = new Error("The email or password entered is incorrect.");
         error.status = 400;
         throw error;
     }
 
     if (!user.password) {
-        const error = new Error("User password is missing");
+        const error = new Error("The user password is missing.");
         error.status = 500;
         throw error;
     }

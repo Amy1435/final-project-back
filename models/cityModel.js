@@ -12,7 +12,7 @@ const citySchema = new Schema({
         type: String,
         require: true,
         maxLength: 21,
-        required: [true, `You must insert the country`],
+        required: [true, `You must insert the name of the country`],
     },
     continent: {
         type: String,
@@ -23,15 +23,12 @@ const citySchema = new Schema({
     },
     city_population: {
         type: Number,
-        required: [
-            true,
-            `You must insert the number of population in the city`,
-        ],
+        required: [true, `You must insert the population number of the city`],
     },
     img_url: {
         type: String,
         require: true,
-        required: [true, `You must insert an img of the city`],
+        required: [true, `You must insert an image of the city`],
     },
     internet_speed: {
         type: Number,
@@ -39,11 +36,11 @@ const citySchema = new Schema({
     },
     sefety_level: {
         type: Number,
-        required: [true, `You must insert safety speed`],
+        required: [true, `You must insert safety speed`], //! What is safety speed? 120mph?!
     },
     avarage_salary: {
         type: Number,
-        required: [true, `You must insert the avarage salary`],
+        required: [true, `You must insert the average salary`],
     },
 });
 

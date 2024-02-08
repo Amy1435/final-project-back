@@ -1,31 +1,28 @@
 import express from "express";
 const router = express.Router();
 import User from "../models/userModel.js";
-import bcrypt from "bcrypt";
+import { hashPassword, comparePassword } from "../helpers/authHelper.js";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
+const { PEPPER_KEY, SECRET_KEY } = process.env;
 
 // //SIGN UP
 router.post("/sign-up", async (req, res) => {
     try {
-        if (!req.body.email || !req.body.password || !req.body.username) {
+        const { email, password, username } = req.body;
+        if (!email || !password || !username) {
             return res
                 .status(400)
                 .json("You must insert email, password, and username");
         }
 
-        await User.signUpControl(
-            req.body.email,
-            req.body.password,
-            req.body.username
-        );
-
-        //salt and pepper
-        const salt = await bcrypt.genSalt(10);
-        const hashedPass = await bcrypt.hash(req.body.password, salt);
+        await User.signUpControl(email, password, username);
 
         const newUser = new User({
-            username: req.body.username,
-            email: req.body.email,
-            password: hashedPass,
+            username: username,
+            email: email,
+            password: await hashPassword(password),
         });
 
         const { _id } = await User.create(newUser);
@@ -41,24 +38,24 @@ router.post("/sign-up", async (req, res) => {
 //LOGIN
 router.post("/log-in", async (req, res) => {
     try {
-        if (!req.body.email || !req.body.password) {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
             return res.status(400).json("You must insert email or password");
         }
-        const user = await User.logInControl(req.body.email, req.body.password);
 
-        //compara passwords
-        const isValidPass = await bcrypt.compare(
-            req.body.password,
-            user.password
-        );
-        if (!isValidPass) {
-            return res.status(401).json("wrong email or password");
-        }
+        const user = await User.logInControl(email);
+        await comparePassword(password, user.password);
+
+        //generate token
+        // const token = jwt.sign({ id: user._id }, SECRET_KEY, {
+        //     expiresIn: "1d",
+        // });
 
         return res.status(202).json(user);
     } catch (error) {
         console.error(error);
-        res.status(500).json(error);
+        res.status(error.status || 500).json(error.message || error);
     }
 });
 

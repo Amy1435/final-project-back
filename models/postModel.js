@@ -21,7 +21,7 @@ const PostSchema = new Schema(
         },
         img: {
             type: String,
-            required: [true, `You must insert an img`],
+            required: [true, `You must insert an image`],
         },
         username: {
             //only if the user exist
