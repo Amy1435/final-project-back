@@ -39,7 +39,13 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
     try {
         const { id } = req.params;
+        console.log("Received ID:", id);
         const post = await Post.findById(id);
+        if (!post) {
+            return res
+                .status(404)
+                .json({ message: `Post with ID ${id} not found` });
+        }
         res.status(200).json(post);
     } catch (error) {
         console.error(error.stack);

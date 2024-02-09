@@ -36,7 +36,7 @@ const citySchema = new Schema({
     },
     sefety_level: {
         type: Number,
-        required: [true, `You must insert safety speed`], //! What is safety speed? 120mph?!
+        required: [true, `You must insert safety level from 1 to 10`],
     },
     avarage_salary: {
         type: Number,
