@@ -10,7 +10,8 @@ const { PEPPER_KEY, SECRET_KEY } = process.env;
 // //SIGN UP
 router.post("/sign-up", async (req, res) => {
     try {
-        const { email, password, username } = req.body;
+        const { email, password, username, profile_img, from_city, age, bio } =
+            req.body;
         if (!email || !password || !username) {
             return res
                 .status(400)
@@ -23,6 +24,10 @@ router.post("/sign-up", async (req, res) => {
             username: username,
             email: email,
             password: await hashPassword(password),
+            profile_img: profile_img,
+            from_city: from_city,
+            age: age,
+            bio: bio,
         });
 
         const { _id } = await User.create(newUser);
