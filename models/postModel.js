@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-const { Schema, model } = mongoose;
+const { Schema, SchemaTypes, model } = mongoose;
 
 const PostSchema = new Schema(
     {
@@ -13,7 +13,6 @@ const PostSchema = new Schema(
             type: String,
             required: [true, `You must insert your post`],
             minLength: 50,
-            maxLength: 1000,
         },
         city: {
             type: String,
@@ -23,9 +22,10 @@ const PostSchema = new Schema(
             type: String,
             required: [true, `You must insert an image`],
         },
-        username: {
-            //only if the user exist
-            type: String,
+        user: {
+            // only if the user exist
+            type: SchemaTypes.ObjectId,
+            ref: "User",
             required: [true, `You must insert a user Author`],
             // validate: {
             //     validator: async function (value) {
@@ -42,11 +42,11 @@ const PostSchema = new Schema(
         timestamps: true,
     }
 );
-PostSchema.pre("save", function (next) {
-    this.city = this.city.toLowerCase();
-    this.username = this.username.toLowerCase();
-    next();
-});
+// PostSchema.pre("save", function (next) {
+//     this.city = this.city.toLowerCase();
+//     // this.username = this.username.toLowerCase();
+//     next();
+// });
 const Post = model("Post", PostSchema);
 
 export default Post;

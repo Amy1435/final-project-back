@@ -33,8 +33,8 @@ const UserSchema = new Schema(
         },
         from_city: {
             type: String,
-            // maxLength: 28,
-            // minLength: 2,
+            maxLength: 28,
+            minLength: 2,
             required: [true, `You must insert your city of origin`],
         },
         age: {
