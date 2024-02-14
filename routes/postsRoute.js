@@ -17,13 +17,14 @@ router.post("/", async (req, res) => {
 //GET all post
 router.get("/", async (req, res) => {
     try {
-        const { username, city } = req.query;
+        const { user, city } = req.query;
 
-        if (username) {
-            const userPosts = await Post.find({ username }).populate({
-                path: "user",
-                select: "from_city username",
-            });
+        if (user) {
+            const userPosts = await Post.find({ user });
+            // .populate({
+            //     path: "user",
+            //     select: "from_city username",
+            // });
             res.status(200).json(userPosts);
         } else if (city) {
             const userPosts = await Post.find({ city }).populate({
@@ -48,8 +49,11 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        console.log("Received ID:", id);
-        const post = await Post.findById(id);
+        // console.log("Received ID:", id);
+        const post = await Post.findById(id).populate({
+            path: "user",
+            select: "from_city username",
+        });
         if (!post) {
             return res
                 .status(404)
@@ -93,17 +97,13 @@ router.delete("/:id", async (req, res) => {
     try {
         const { id } = req.params;
         const post = await Post.findById(id);
-        if (post.username === req.body.username) {
-            try {
-                await Post.findByIdAndDelete(id);
-                res.status(200).json({
-                    message: `The Post ID${id} was erased from database`,
-                });
-            } catch (error) {
-                res.status(500).json({ message: error.message });
-            }
-        } else {
-            res.status(401).json(`you can modify only your posts`);
+        try {
+            await Post.findByIdAndDelete(id);
+            res.status(200).json({
+                message: `The Post ID${id} was erased from database`,
+            });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
         }
     } catch (error) {
         res.status(500).json({ message: error.message });

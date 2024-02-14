@@ -46,7 +46,6 @@ const UserSchema = new Schema(
         bio: {
             type: String,
             trim: true,
-            maxLength: 200,
             minLength: 10,
             required: [true, `You must insert a bio`],
         },
