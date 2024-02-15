@@ -7,8 +7,14 @@ import { hashPassword } from "../helpers/authHelper.js";
 //GET all users
 router.get("/", async (req, res) => {
     try {
-        const users = await User.find({});
-        return res.status(200).json(users);
+        const { city } = req.query;
+        if (city) {
+            const cityUsers = await User.find({ from_city: city });
+            res.status(200).json(cityUsers);
+        } else {
+            const users = await User.find({});
+            return res.status(200).json(users);
+        }
     } catch (error) {
         console.error(error.stack);
         res.status(500).json({ message: error.message });
