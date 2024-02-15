@@ -17,15 +17,15 @@ const citySchema = new Schema({
     continent: {
         type: String,
         require: true,
-        minLength: 5,
+        minLength: 4,
         maxLength: 10,
         required: [true, `You must insert the name of the continent`],
     },
-    city_population: {
+    population: {
         type: Number,
         required: [true, `You must insert the population number of the city`],
     },
-    img_url: {
+    img: {
         type: String,
         require: true,
         required: [true, `You must insert an image of the city`],
@@ -38,7 +38,7 @@ const citySchema = new Schema({
         type: Number,
         required: [true, `You must insert safety level from 1 to 10`],
     },
-    avarage_salary: {
+    cost_of_living_month: {
         type: Number,
         required: [true, `You must insert the average salary`],
     },

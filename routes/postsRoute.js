@@ -21,10 +21,6 @@ router.get("/", async (req, res) => {
 
         if (user) {
             const userPosts = await Post.find({ user });
-            // .populate({
-            //     path: "user",
-            //     select: "from_city username",
-            // });
             res.status(200).json(userPosts);
         } else if (city) {
             const userPosts = await Post.find({ city }).populate({
@@ -49,7 +45,6 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        // console.log("Received ID:", id);
         const post = await Post.findById(id).populate({
             path: "user",
             select: "from_city username",

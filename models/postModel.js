@@ -23,19 +23,9 @@ const PostSchema = new Schema(
             required: [true, `You must insert an image`],
         },
         user: {
-            // only if the user exist
             type: SchemaTypes.ObjectId,
             ref: "User",
             required: [true, `You must insert a user Author`],
-            // validate: {
-            //     validator: async function (value) {
-            //         const user = await model("User").findOne({
-            //             username: value,
-            //         });
-            //         return user !== null;
-            //     },
-            //     message: "User does not exist",
-            // },
         },
     },
     {
