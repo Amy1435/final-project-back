@@ -7,6 +7,7 @@ const citySchema = new Schema({
         required: [true, `You must insert the name of the city`],
         minLength: 2,
         maxLength: 21,
+        unique: true,
     },
     country: {
         type: String,

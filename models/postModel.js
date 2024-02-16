@@ -7,7 +7,7 @@ const PostSchema = new Schema(
             type: String,
             required: [true, `You must insert the title`],
             minLength: 5,
-            maxLength: 50,
+            maxLength: 100,
         },
         post: {
             type: String,
