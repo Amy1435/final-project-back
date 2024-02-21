@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { SchemaTypes } from "mongoose";
 const { Schema, model } = mongoose;
 import validator from "validator";
 const { isStrongPassword, isEmail } = validator;
@@ -31,10 +31,9 @@ const UserSchema = new Schema(
             type: String,
             default: "",
         },
-        from_city: {
-            type: String,
-            maxLength: 28,
-            minLength: 2,
+        city: {
+            type: SchemaTypes.ObjectId,
+            ref: "City",
             required: [true, `You must insert your city of origin`],
         },
         age: {

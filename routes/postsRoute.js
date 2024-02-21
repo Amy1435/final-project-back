@@ -25,14 +25,19 @@ router.get("/", async (req, res) => {
         } else if (city) {
             const userPosts = await Post.find({ city }).populate({
                 path: "user",
-                select: "from_city username",
+                select: "city username",
             });
             res.status(200).json(userPosts);
         } else {
-            const posts = await Post.find({}).populate({
-                path: "user",
-                select: "from_city username",
-            });
+            const posts = await Post.find({})
+                .populate({
+                    path: "user",
+                    select: "username city",
+                })
+                .populate({
+                    path: "city",
+                    select: "name",
+                });
             res.status(200).json(posts);
         }
     } catch (error) {
@@ -45,10 +50,16 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        const post = await Post.findById(id).populate({
-            path: "user",
-            select: "from_city username",
-        });
+        const post = await Post.findById(id)
+            .populate({
+                path: "user",
+                select: "city username",
+            })
+            .populate({
+                path: "city",
+                select: "name",
+            });
+
         if (!post) {
             return res
                 .status(404)

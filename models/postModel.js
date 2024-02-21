@@ -15,7 +15,8 @@ const PostSchema = new Schema(
             minLength: 50,
         },
         city: {
-            type: String,
+            type: SchemaTypes.ObjectId,
+            ref: "City",
             required: [true, `You must insert the city`],
         },
         img: {
@@ -32,11 +33,7 @@ const PostSchema = new Schema(
         timestamps: true,
     }
 );
-// PostSchema.pre("save", function (next) {
-//     this.city = this.city.toLowerCase();
-//     // this.username = this.username.toLowerCase();
-//     next();
-// });
+
 const Post = model("Post", PostSchema);
 
 export default Post;

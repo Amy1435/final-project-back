@@ -1,6 +1,7 @@
 import express from "express";
 const router = express.Router();
 import User from "../models/userModel.js";
+import City from "../models/cityModel.js";
 import { hashPassword, comparePassword } from "../helpers/authHelper.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
@@ -10,7 +11,7 @@ const { PEPPER_KEY, SECRET_KEY } = process.env;
 // //SIGN UP
 router.post("/sign-up", async (req, res) => {
     try {
-        const { email, password, username, profile_img, from_city, age, bio } =
+        const { email, password, username, profile_img, city, age, bio } =
             req.body;
         if (!email || !password || !username) {
             return res
@@ -25,7 +26,7 @@ router.post("/sign-up", async (req, res) => {
             email: email,
             password: await hashPassword(password),
             profile_img: profile_img,
-            from_city: from_city,
+            city: city,
             age: age,
             bio: bio,
         });

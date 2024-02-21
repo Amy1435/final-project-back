@@ -9,7 +9,7 @@ router.get("/", async (req, res) => {
     try {
         const { city } = req.query;
         if (city) {
-            const cityUsers = await User.find({ from_city: city });
+            const cityUsers = await User.find({ city: city });
             res.status(200).json(cityUsers);
         } else {
             const users = await User.find({});
@@ -25,7 +25,11 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        const doc = await User.findById(id);
+        const doc = await User.findById(id).populate({
+            path: "city",
+            select: "name",
+        });
+
         const user = doc.toObject();
         const posts = await Post.find({ user: doc._id }).select("title");
         user.posts = posts;
