@@ -20,7 +20,10 @@ router.get("/", async (req, res) => {
         const { user, city } = req.query;
 
         if (user) {
-            const userPosts = await Post.find({ user });
+            const userPosts = await Post.find({ user }).populate({
+                path: "city",
+                select: "name",
+            });
             res.status(200).json(userPosts);
         } else if (city) {
             const userPosts = await Post.find({ city }).populate({

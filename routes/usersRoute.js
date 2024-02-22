@@ -2,7 +2,7 @@ import express from "express";
 import User from "../models/userModel.js";
 import Post from "../models/postModel.js";
 const router = express.Router();
-import { hashPassword } from "../helpers/authHelper.js";
+import { comparePassword, hashPassword } from "../helpers/authHelper.js";
 
 //GET all users
 router.get("/", async (req, res) => {
@@ -46,23 +46,25 @@ router.patch("/:id", async (req, res) => {
         const { id } = req.params;
         const { password } = req.body;
         //hash nuova password
-        if (password) {
+        const user = await User.findById(id);
+        if (password !== user.password) {
             const hashedPassword = await hashPassword(password);
             req.body.password = hashedPassword;
         }
 
-        const user = await User.findByIdAndUpdate({ _id: id }, req.body, {
+        const userUpdate = await User.findByIdAndUpdate({ _id: id }, req.body, {
             new: true,
             runValidators: true,
+        }).populate({
+            path: "city",
+            select: "name",
         });
-
         if (!user) {
             return res
                 .status(404)
-                .json({ message: `cant find user with ID ${id}` });
+                .json({ message: `Cant find user with ID ${id}` });
         }
-        const updatedUser = await User.findById(id);
-        return res.status(200).json(updatedUser);
+        return res.status(200).json(userUpdate);
     } catch (error) {
         console.error(error.stack);
         res.status(500).json({ message: error.message });
