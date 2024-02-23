@@ -12,7 +12,10 @@ router.get("/", async (req, res) => {
             const cityUsers = await User.find({ city: city });
             res.status(200).json(cityUsers);
         } else {
-            const users = await User.find({});
+            const users = await User.find({}).populate({
+                path: "city",
+                select: "name",
+            });
             return res.status(200).json(users);
         }
     } catch (error) {

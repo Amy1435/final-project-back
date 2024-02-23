@@ -3,7 +3,6 @@ const router = express.Router();
 import User from "../models/userModel.js";
 import City from "../models/cityModel.js";
 import { hashPassword, comparePassword } from "../helpers/authHelper.js";
-import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
 const { PEPPER_KEY, SECRET_KEY } = process.env;
@@ -52,11 +51,6 @@ router.post("/log-in", async (req, res) => {
 
         const user = await User.logInControl(email);
         await comparePassword(password, user.password);
-
-        //generate token
-        // const token = jwt.sign({ id: user._id }, SECRET_KEY, {
-        //     expiresIn: "1d",
-        // });
 
         return res.status(202).json(user);
     } catch (error) {
