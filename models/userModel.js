@@ -98,10 +98,7 @@ UserSchema.statics.logInControl = async function (email) {
     return user;
 };
 
-// UserSchema.pre("save", function (next) {
-//     this.username = this.username.toLowerCase();
-//     next();
-// });
+
 
 const User = model("User", UserSchema);
 

@@ -1,13 +1,21 @@
 import express from "express";
 import Post from "../models/postModel.js";
+import { controlAuthorization } from "../helpers/authHelper.js";
 const router = express.Router();
 
 //POST post
-router.post("/", async (req, res) => {
+router.post("/", controlAuthorization, async (req, res) => {
+    const postUser = req.body.user;
+    console.log(`postuser` + postUser);
+    console.log(req.user._id);
     try {
-        const { _id } = await Post.create(req.body);
-        const newPost = await Post.findById(_id);
-        return res.status(201).json(newPost);
+        if (req.user._id === postUser) {
+            const { _id } = await Post.create(req.body);
+            const newPost = await Post.findById(_id);
+            return res.status(201).json(newPost);
+        } else {
+            res.status(401).json(`Request not authorized`);
+        }
     } catch (error) {
         console.error(error.stack);
         res.status(500).json({ message: error.message });
@@ -24,13 +32,21 @@ router.get("/", async (req, res) => {
                 path: "city",
                 select: "name",
             });
-            res.status(200).json(userPosts);
+            if (userPosts.length === 0) {
+                res.status(404).json({ message: "No posts found" });
+            } else {
+                res.status(200).json(userPosts);
+            }
         } else if (city) {
-            const userPosts = await Post.find({ city }).populate({
+            const usersPosts = await Post.find({ city }).populate({
                 path: "user",
                 select: "city username",
             });
-            res.status(200).json(userPosts);
+            if (usersPosts.length === 0) {
+                res.status(404).json({ message: "No posts found" });
+            } else {
+                res.status(200).json(usersPosts);
+            }
         } else {
             const posts = await Post.find({})
                 .populate({
@@ -76,16 +92,18 @@ router.get("/:id", async (req, res) => {
 });
 
 //Patch the post
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", controlAuthorization, async (req, res) => {
     try {
         const { id } = req.params;
         const post = await Post.findById(id);
         if (!post) {
             return res
                 .status(404)
-                .json({ message: `cant find Post with ID ${id}` });
+                .json({ message: `Cant find Post with ID ${id}` });
         }
-        if (post.username === req.body.username) {
+        console.log(req.user._id);
+        console.log(post.user.toString());
+        if (req.user._id === post.user.toString()) {
             try {
                 const updatedPost = await Post.findByIdAndUpdate(id, req.body);
                 const newPost = await Post.findById(id);
@@ -94,7 +112,7 @@ router.patch("/:id", async (req, res) => {
                 res.status(500).json({ message: error.message });
             }
         } else {
-            res.status(401).json(`you can modify only your posts`);
+            res.status(401).json(`Request not authorized`);
         }
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -102,17 +120,23 @@ router.patch("/:id", async (req, res) => {
 });
 
 //DELETE the post
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", controlAuthorization, async (req, res) => {
     try {
         const { id } = req.params;
         const post = await Post.findById(id);
-        try {
-            await Post.findByIdAndDelete(id);
-            res.status(200).json({
-                message: `The Post ID${id} was erased from database`,
-            });
-        } catch (error) {
-            res.status(500).json({ message: error.message });
+        console.log(req.user._id);
+        console.log(post.user.toString());
+        if (req.user._id === post.user.toString()) {
+            try {
+                await Post.findByIdAndDelete(id);
+                res.status(200).json({
+                    message: `The Post ID${id} was erased from database`,
+                });
+            } catch (error) {
+                res.status(500).json({ message: error.message });
+            }
+        } else {
+            res.status(401).json(`Request not authorized`);
         }
     } catch (error) {
         res.status(500).json({ message: error.message });

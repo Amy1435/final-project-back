@@ -1,11 +1,13 @@
 import express from "express";
 const router = express.Router();
 import User from "../models/userModel.js";
-import City from "../models/cityModel.js";
-import { hashPassword, comparePassword } from "../helpers/authHelper.js";
+import {
+    hashPassword,
+    comparePassword,
+    createToken,
+} from "../helpers/authHelper.js";
 import dotenv from "dotenv";
 dotenv.config();
-const { PEPPER_KEY, SECRET_KEY } = process.env;
 
 // //SIGN UP
 router.post("/sign-up", async (req, res) => {
@@ -30,9 +32,13 @@ router.post("/sign-up", async (req, res) => {
             bio: bio,
         });
 
+        //create token
+        const token = createToken(newUser._id);
+
         const { _id } = await User.create(newUser);
         const user = await User.findById(_id);
-        return res.status(201).json(user);
+
+        return res.status(201).json({ user, token });
     } catch (error) {
         console.error(error);
         //fai vedere anche queli di signupcontrol
@@ -51,8 +57,9 @@ router.post("/log-in", async (req, res) => {
 
         const user = await User.logInControl(email);
         await comparePassword(password, user.password);
-
-        return res.status(202).json(user);
+        //create token
+        const token = createToken(user._id);
+        return res.status(202).json({ user, token });
     } catch (error) {
         console.error(error);
         res.status(error.status || 500).json(error.message || error);
